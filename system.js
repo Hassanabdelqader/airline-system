@@ -19,6 +19,8 @@ function  handletook_off(params) {
    
 }
 
+let test;
+
 
 function  handlearrived(params) {
 
