@@ -1,45 +1,28 @@
-const {myEvent} = require('./events')
-require("./manager")
-require("./system")
+const io = require("socket.io-client");
+const server = process.env.HOST || "http://localhost:9560/";
 
+poiltConnection = io.connect(server);
 
 function handlenew_flight(params) {
 
-    console.log(`Manager: new flight with ID ${params.uuid} have been scheduled\n Flight { 
-     event: 'new-flight',
-     time: ${new Date().toLocaleString()}\n
-     Details: { 
-        airLine: 'Royal Jordanian Airlines',
-        flightID: ${params.uuid},
-        pilot: '${params.poilt}',\n
-        destination: ‘${params.destination} City ‘ }
-     }\n`)
+   let flag1 = true;
+   setInterval(() => {
+      if(flag1){
+          flag1 = false
+         console.log('\x1b[36m%s\x1b[0m',`Pilot: flight with ID ‘${params.uuid}’ took-off`)
+          poiltConnection.emit("took-off",params)
+          }
+   }, 4000);
+   let flag2 = true;
+   setInterval(() => {
+          if(flag2){
+        console.log('\x1b[35m%s\x1b[0m',`Pilot: flight with ID ‘${params.uuid}’ has arrived\n\n`)
 
-     let flag1 = true;
-     setInterval(() => {
-        if(flag1){
-            flag1 = false
-            myEvent.emit("took-off",params)
-            }
-     }, 4000);
-
-     
-     let flag2 = true;
-     setInterval(() => {
-        if(flag2){
-            flag2 = false
-            myEvent.emit("arrived",params)
-        }
-     }, 7000);
-
-     let flag3 = true;
-    setInterval(() => {
-        if(flag3){
-            flag3 = false
-            myEvent.emit("finished",params)
-            }
-     }, 9000);
+          flag2 = false
+          poiltConnection.emit("arrived",params)
+      }
+   }, 7000);
 
 }
 
-myEvent.on("new-flight" ,handlenew_flight); 
+poiltConnection.on("new-flight",handlenew_flight);

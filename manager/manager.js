@@ -1,13 +1,9 @@
 
-
-const {myEvent} = require('./events')
 const { faker } =require('@faker-js/faker');
-require("./manager")
-require("./system")
+const io = require("socket.io-client")
+const server = process.env.HOST || "http://localhost:9560/" ;
 
-
-
-
+managerConnection = io.connect(server)
 
 setInterval(() => {
     let data = {
@@ -16,13 +12,17 @@ setInterval(() => {
         poilt : faker.name.fullName(),
 
     }
-    myEvent.emit("new-flight" , data)
+    console.log('\x1b[35m%s\x1b[0m',`Manager: new flight with ID ‘${data.uuid}’ have been scheduled`)
+    managerConnection.emit("new-flight" , data)
 }, 10000);
+
+
 
 function  handelfinished(params) {
 
-    console.log(`*************Amazing flight ****************, ${params.uuid} \n \n`);
+
+    console.log('\x1b[36m%s\x1b[0m',`Manager: we’re greatly thankful for the amazing flight, ${params.poilt}, ${params.uuid} \n \n`);
 }
 
 
-myEvent.on("finished" , handelfinished); 
+managerConnection.on("finished" , handelfinished); 
